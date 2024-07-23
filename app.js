@@ -4,10 +4,16 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const gameRouter = require('./routes/gameRoutes');
+const cors = require('cors');
 
 const app = express();
 
 // 1) MIDDLEWARES
+
+// Implement CORS
+app.use(cors());
+app.options('*', cors());
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
