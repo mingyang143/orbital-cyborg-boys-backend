@@ -4,6 +4,7 @@
   "description": "orbital-backend",
   "main": "app.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:prod": "NODE_ENV=production nodemon server.js"
   },
