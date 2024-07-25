@@ -103,7 +103,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetURL = `${req.protocol}://${req.get(
     'host'
   )}/api/v1/users/resetPassword/${resetToken}`;
-  console.log(resetURL);
+  //console.log(resetURL);
   // const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
   try {
     // await sendEmail({
@@ -135,10 +135,16 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
+
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() }
   });
+
+  if (req.body.password !== req.body.passwordConfirm) {
+    return next(new AppError('Passwords do not match', 400));
+  }
+
   // 2) If token has not expired, and there is user, set the new password
   if (!user) {
     return next(
@@ -150,6 +156,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   }
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
+
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
